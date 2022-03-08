@@ -30,21 +30,23 @@ final class PostPresenter extends Nette\Application\UI\Presenter
 	{	
 	$form = new Form; // means Nette\Application\UI\Form
 
-	$form->addText('name', 'Jméno:')
+	$form->addHidden('name', 'Jméno:')
+		->setRequired()
+        ->setDefaultValue($this->getUser()->getIdentity()->name);
+
+	$form->addTextArea('content')
+        ->setHtmlAttribute('class', ' ')
 		->setRequired();
 
-	$form->addEmail('email', 'E-mail:');
-
-	$form->addTextArea('content', 'Komentář:')
-		->setRequired();
 
 	$form->addSubmit('send', 'Publikovat komentář');
 
+    //„po úspěšném odeslání formuláře zavolej metodu commentFormSucceeded ze současného presenteru“
 	$form->onSuccess[] = [$this, 'commentFormSucceeded'];
 
 	return $form;
 	}
-
+    //$data data z formuláře
 	public function commentFormSucceeded(\stdClass $data): void
 	{
 	$postId = $this->getParameter('postId');
@@ -52,7 +54,6 @@ final class PostPresenter extends Nette\Application\UI\Presenter
 	$this->database->table('comments')->insert([
 		'post_id' => $postId,
 		'name' => $data->name,
-		'email' => $data->email,
 		'content' => $data->content,
 	]);
 

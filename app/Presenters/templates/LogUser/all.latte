@@ -1,0 +1,7 @@
+{block content}
+    <h1 class="mt-3" n:block="title">Uživatelé</h1>
+
+    <div class="mt-3" n:foreach="$posts as $post" class="post">
+        <div><a class="text-black text-decoration-none" n:href="EditUser:detail $post->id">{$post->username} - {$post->role}</a></div>
+    </div>
+{/block}
