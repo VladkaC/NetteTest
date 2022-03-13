@@ -3,14 +3,20 @@ namespace App\Presenters;
 
 use Nette;
 use Nette\Application\UI\Form;
+use App\Model\DeleteUser;
+use App\Model\Edit;
 
 final class EditUserPresenter extends Nette\Application\UI\Presenter
 {
     private Nette\Database\Explorer $database;
+    private DeleteUser $deleteUser;
+    private Edit $edit;
 
-    public function __construct(Nette\Database\Explorer $database)
+    public function __construct(Nette\Database\Explorer $database, DeleteUser $deleteUser, Edit $edit)
     {
         $this->database = $database;
+        $this->deleteUser = $deleteUser;
+        $this->edit = $edit;
     }
 
     public function renderDetail(int $id): void
@@ -45,20 +51,41 @@ final class EditUserPresenter extends Nette\Application\UI\Presenter
 
     }
 
+    //změna uživatele
     public function editUserDetailFormSucceeded(array $data): void
     {
         //když existuje člověk s id?
         $id = $this->getParameter('id');
 
         //edituje uživatele
-        if ($id) {
-            $post = $this->database
-                ->table('users')
-                ->get($id);
-            $post->update($data);
-        }
+        $this->edit->editUser($id, $data);
 
         $this->flashMessage('Změna proběhla úspěšně.', 'success');
         $this->redirect('LogUser:all');
+    }
+
+    //smazání uživatele
+    protected function createComponentDeleteUserDetailForm() :Form
+    {
+        $form = new Form;
+        $form->addSubmit('send', 'Smazat uživatele');
+
+        $form->onSuccess[] = [$this, 'DeleteUserDetailFormSucceeded'];
+        return $form;
+
+    }
+
+    public function DeleteUserDetailFormSucceeded(array $data): void
+    {
+        //když existuje člověk s id?
+        $id = $this->getParameter('id');
+        try {
+            $this->deleteUser->deleteFormSubmitted($data, $id);
+
+            $this->flashMessage('Smazání proběhlo úspěšně.');
+            $this->redirect('Homepage:');
+        } catch (Nette\Database\UniqueConstraintViolationException $e) {
+            $this->flashMessage('Něco se pokazilo.');
+        }
     }
 }

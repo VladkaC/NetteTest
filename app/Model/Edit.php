@@ -15,8 +15,16 @@ final class Edit
         $this->database = $database;
     }
 
-
-    public function editPostForm($data,$postId)
+    public function editUser($id,$data)
+    {
+        if ($id) {
+            $post = $this->database
+                ->table('users')
+                ->get($id);
+            $post->update($data);
+        }
+    }
+/*  public function editPostForm($data,$postId)
     {
 
         // získá data z formuláře, vloží je do databáze, vytvoří zprávu pro uživatele o úspěšném uložení příspěvku a
@@ -34,10 +42,10 @@ final class Edit
                 ->insert($data);
         }
         $this->redirect('Post:show', $post->id);
-    }
+    }*/
 
     //editace příspěvku
-    public function renderEdit(int $postId): void
+    /*public function renderEdit(int $postId): void
     {
         $post = $this->database
             ->table('posts')
@@ -49,5 +57,15 @@ final class Edit
 
         $this->getComponent('postForm')
             ->setDefaults($post->toArray());
-    }
+    }*/
+   /* public function editArticle($postId)
+    {
+        $post = $this->database
+            ->table('posts')
+            ->get($postId);
+
+        if (!$post) {
+            $this->error('Post not found');
+        }
+    }*/
 }
