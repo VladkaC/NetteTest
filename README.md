@@ -1,2 +1,2 @@
 # NetteTest
-# První zkouška Nette. Sloužící k mému učení. 
+# První zkouška Nette. Sloužící k mému učení. + bootstrap
